@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Color Extractor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container" >
+        <h1>Image Color Extractor</h1>
+        <form method="post" enctype="multipart/form-data">
+            <input type="file" name="imgFile" required>
+
+            <label>Number of Colors:</label>
+            <input type="number"  name="num_colors" value="{{ num_colors }}" min="1" max="50">
+
+            <label>Delta (Color Quantization):</label>
+            <input type="number" name="delta" value="{{ delta }}" min="1" max="64">
+
+            <label>Reduce Gradients:</label>
+            <input type="checkbox" name="reduce_gradients" checked>
+
+            <label>Brightness Factor:</label>
+            <input type="range" name="brightness_factor" min="0.5" max="2.0" step="0.1" value="1.0">
+
+            <button type="submit">Extract Colors</button>
+        </form>
+        {% if image_path %}
+            <img src="{{ image_path }}" alt="Uploaded Image" style="width: 300px;">
+            <table>
+                <tr><th>Color</th><th>Hex Code</th><th>Percentage</th></tr>
+                {% for color in colors %}
+                    <tr>
+                        <td class="color-box" style="background-color: rgb({{ color[0][0] }}, {{ color[0][1] }}, {{ color[0][2] }}); width: 50px; height: 50px;"></td>
+                        <td>#{{ '%02x%02x%02x' % (color[0][0], color[0][1], color[0][2]) }}</td>
+                        <td>{{ "%.2f" % ((color[1] / colors | map(attribute=1) | sum) * 100) }}%</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+</body>
+</html>
